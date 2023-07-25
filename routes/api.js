@@ -1,8 +1,8 @@
-const express = require('express')
+//const express = require('express')
 const api = require('express').Router()
 const fs = require('fs')
-api.use(express.json())
 const { v4: uuidv4 } = require('uuid');
+//api.use(express.json())
 
 const util = require('util');
 
@@ -10,13 +10,15 @@ const readFromFile = util.promisify(fs.readFile);
 
 api.get('/notes', (req, res) => {
     console.info(`${req.method} request received for api`)
-    readFromFile('db/db.json', 'utf8')
-    .then((notes) => {
-        return res.json(JSON.parse(notes))
-    }) 
-    .catch((err) => {
-        res.status(500).json(err)
-    })
+    readFromFile('./db/db.json', 'utf8')
+        .then((notes) => {
+            //console.log([].concat(JSON.parse(notes)))
+            notes = [].concat(JSON.parse(notes))
+            return res.json(notes)
+        })
+        .catch((err) => {
+            res.status(500).json(err)
+        })
 })
 
 api.post('/notes', (req, res) => {
@@ -25,23 +27,28 @@ api.post('/notes', (req, res) => {
         ...req.body,
         id: uuidv4()
     }
-    console.log('created note')
 
     readFromFile('db/db.json', 'utf8')
-    .then((notes) => {
-        res.json(JSON.parse(notes))
-    })
-    .then((notes) => {
-        JSON.parse(notes).push(note)
-    })
-    .then((notes) => {
-        fs.writeFile('db/db.json', JSON.stringify(notes))
-    })
-    .catch((err) => {
-        res.status(500).json(err)
-    })
-
-    
+        .then((notes) => {
+            //console.log(notes)
+            const jsonNotes = JSON.parse(notes)
+            //console.log(jsonNotes)
+            jsonNotes.push(note)
+            //console.log(jsonNotes)
+            fs.writeFile('db/db.json', JSON.stringify(jsonNotes), (err) => {
+                if (err)
+                    console.log(err);
+                else {
+                    console.log("File written successfully");
+                }
+            })
+        })
+        .then((notes) => {
+            res.json(notes)
+        })
+        .catch((err) => {
+            res.status(500).json(err)
+        })
 })
 
 module.exports = api

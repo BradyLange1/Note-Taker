@@ -109,20 +109,17 @@ const handleNewNoteView = (e) => {
 };
 
 const handleRenderSaveBtn = () => {
-  console.log('called')
   if (!noteTitle.value.trim() || !noteText.value.trim()) {
-    console.log('if')
     hide(saveNoteBtn);
   } else {
-    console.log('else')
     show(saveNoteBtn);
   }
 };
 
 // Render the list of note titles
 const renderNoteList = async (notes) => {
-  console.log(notes)
   let jsonNotes = await notes.json();
+  console.log(jsonNotes)
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
@@ -163,6 +160,7 @@ const renderNoteList = async (notes) => {
   }
 
   jsonNotes.forEach((note) => {
+    console.log('json note')
     const li = createLi(note.title);
     li.dataset.note = JSON.stringify(note);
 
